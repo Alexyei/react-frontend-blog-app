@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useState} from 'react';
+import React, {FC, useCallback, useMemo, useState} from 'react';
 import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -6,23 +6,45 @@ import SimpleMDE from 'react-simplemde-editor';
 
 import 'easymde/dist/easymde.min.css';
 import classes from './AddPost.module.scss';
-import {Link} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {selectIsAuth} from "../../store/reducers/authReducer";
+import $api from "../../api";
 
 const AddPost: FC = () => {
-    const imageUrl = '';
-    const [value, setValue] = useState('');
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const isAuth = useSelector(selectIsAuth);
+    const [isLoading, setLoading] = React.useState(false);
+    const [text, setText] = React.useState('');
+    const [title, setTitle] = React.useState('');
+    const [tags, setTags] = React.useState('');
+    const [imageUrl, setImageUrl] = React.useState('');
+    const inputFileRef = React.useRef(null);
 
-    const handleChangeFile = () => {
+    const isEditing = Boolean(id);
+
+    const handleChangeFile = async (event:any) => {
+        try {
+            const formData = new FormData();
+            const file = event.target.files[0];
+            formData.append('file', file);
+            const { data } = await $api.post('/upload', formData);
+            setImageUrl(data.url);
+        } catch (err) {
+            console.warn(err);
+            alert('Ошибка при загрузке файла!');
+        }
     };
 
     const onClickRemoveImage = () => {
     };
 
     const onChange = useCallback((value: string) => {
-        setValue(value);
+        setText(value)
     }, []);
 
-    const options = React.useMemo(
+    const options =useMemo(
         () => ({
             spellChecker: false,
             maxHeight: '400px',
@@ -61,7 +83,7 @@ const AddPost: FC = () => {
                 fullWidth
             />
             <TextField classes={{root: classes.tags}} variant="standard" placeholder="Тэги" fullWidth/>
-            <SimpleMDE className={classes.editor} value={value} onChange={onChange} options={options}/>
+            <SimpleMDE className={classes.editor} value={text} onChange={onChange} options={options}/>
             <div className={classes.buttons}>
                 <Button size="large" variant="contained">
                     Опубликовать

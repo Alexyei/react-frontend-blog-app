@@ -21,8 +21,8 @@ export const fetchRegister = createAsyncThunk('auth/fetchRegister', async (param
     return data;
 });
 
-export const fetchAuthMe = createAsyncThunk('auth/fetchAuthMe', async () => {
-    const {data} = await $api.get<IUser & {token:string}>('/auth/me');
+export const fetchAuthMe = createAsyncThunk('auth/fetchAuthMe', async (token:string) => {
+    const {data} = await $api.get<IUser & {token:string}>('/auth/me',{ headers: {"Authorization" : `Bearer ${token}`}});
     return data;
 });
 

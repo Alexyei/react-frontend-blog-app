@@ -9,6 +9,7 @@ export const publicRoutes= [
     {path: '/',element:(<Home/>),linkName:'home'},
     {path: '/posts/:id',element:(<FullPost/>),linkName:'post'},
     {path: '/add-post',element:(<AddPost/>),linkName:'new-post'},
+    {path: '/posts/:id/edit',element:(<AddPost/>),linkName:'edit-post'},
     {path: '/login',element:(<Login/>),linkName:'login'},
     {path: '/signup',element:(<Registration/>),linkName:'signup'},
 
