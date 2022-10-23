@@ -3,6 +3,7 @@ import Post from "../../components/Post/Post";
 import CommentsBlock from "../../components/CommentsBlock/CommentsBlock";
 import AddComment from "../../components/AddComment/AddComment";
 import {useParams} from "react-router-dom";
+import ReactMarkdown from 'react-markdown';
 import $api from "../../api";
 import PostSkeleton from "../../components/Post/PostSkeleton";
 import {IPost} from "../../store/reducers/postReducer";
@@ -17,7 +18,7 @@ const FullPost:FC = () => {
     React.useEffect(()=>{
         $api.get(`/posts/${id}`)
             .then(res=>setData(res.data))
-            .catch(err=>alert(err.message()))
+            .catch(err=>alert(err.message))
             .finally(()=>setIsLoading(false))
     },[])
 
@@ -32,9 +33,7 @@ const FullPost:FC = () => {
         isFullPost
         isEditable={false}
       >
-        <p>
-            {data.text}
-        </p>
+          <ReactMarkdown children={data.text} />
       </Post>}
       <CommentsBlock
         items={[

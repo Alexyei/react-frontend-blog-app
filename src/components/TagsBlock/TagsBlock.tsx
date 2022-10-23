@@ -18,6 +18,7 @@ const TagsBlock:FC<{isLoading:boolean,items:string[]}> = ({ items, isLoading = t
       <List>
         {(isLoading ? [...Array(5)] : items).map((name:typeof items[number]|undefined, i) => (
           <Link
+              key={i}
             style={{ textDecoration: "none", color: "black" }}
             to={`/tags/${name}`}
           >

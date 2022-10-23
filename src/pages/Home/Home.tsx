@@ -5,7 +5,6 @@ import Grid from '@mui/material/Grid';
 import Post from "../../components/Post/Post";
 import TagsBlock from "../../components/TagsBlock/TagsBlock";
 import CommentsBlock from "../../components/CommentsBlock/CommentsBlock";
-import $api from "../../api";
 import {useDispatch, useSelector} from "react-redux";
 import {fetchPosts, fetchTags, IPost} from "../../store/reducers/postReducer";
 import {AppDispatch,RootState} from "../../store";
@@ -42,10 +41,11 @@ const Home:FC = () => {
         <Grid xs={8} item>
             {
                 isPostsLoading ?
-                    [...Array(5)].map(()=><PostSkeleton/>):
+                    [...Array(5)].map((_,i)=><PostSkeleton key={i}/>):
                     posts.items.map(p=>(
                         <Post
                             {...p}
+                            key={p.id}
                             commentsCount={3}
                             isEditable={checkCanEditPost(p,data)}
                             isFullPost={false}
