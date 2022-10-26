@@ -13,6 +13,10 @@ export const fetchTags = createAsyncThunk('posts/fetchTags',async()=>{
     return data as string[];
 })
 
+export const fetchRemovePost = createAsyncThunk('posts/fetchRemovePost', async (arg:{id:string,token:string}) => {
+    return $api.delete<{id:string}>(`/posts/${arg.id}`, {headers: {"Authorization": `Bearer ${arg.token}`}})
+});
+
 export interface IUser{
     id:string,
     login:string,
@@ -76,6 +80,10 @@ const postSlice = createSlice({
         builder.addCase(fetchTags.rejected, (state,action)=>{
             state.tags.items = [];
             state.tags.status = "error"
+        })
+
+        builder.addCase(fetchRemovePost.pending, (state,action)=>{
+            state.posts.items = state.posts.items.filter((obj) => obj.id !== action.meta.arg.id);
         })
     }
 })

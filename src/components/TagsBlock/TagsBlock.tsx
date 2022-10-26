@@ -14,7 +14,7 @@ import {Link} from "react-router-dom";
 
 const TagsBlock:FC<{isLoading:boolean,items:string[]}> = ({ items, isLoading = true }) => {
   return (
-    <SideBlock title="Тэги">
+    <SideBlock title="Последние теги">
       <List>
         {(isLoading ? [...Array(5)] : items).map((name:typeof items[number]|undefined, i) => (
           <Link

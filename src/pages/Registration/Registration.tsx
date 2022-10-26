@@ -43,8 +43,8 @@ const Registration:FC = () => {
         values.avatarUrl = "https://avatars.dicebear.com/api/bottts/6.svg?size=128"
         const data = await dispatch(fetchRegister(values));
 
-        if (!data.payload) {
-            return alert('Не удалось регистрироваться!');
+        if (!data.payload || 'error' in data.payload) {
+            return alert((data.payload as any).error);
         }
 
         if ('token' in data.payload) {
@@ -68,7 +68,10 @@ const Registration:FC = () => {
                 <TextField
                     error={Boolean(errors.login?.message)}
                     helperText={errors.login?.message}
-                    {...register('login', { required: 'Укажите полное имя' })}
+                    {...register('login', { required: 'Укажите полное имя',minLength: {
+                        value: 3,
+                        message: "мнимум 3 символов"
+                    }, })}
                     className={classes.field}
                     label="Логин"
                     fullWidth
@@ -77,7 +80,10 @@ const Registration:FC = () => {
                     error={Boolean(errors.email?.message)}
                     helperText={errors.email?.message}
                     type="email"
-                    {...register('email', { required: 'Укажите почту' })}
+                    {...register('email', { required: 'Укажите почту',pattern: {
+                            value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                            ,message: "Некорректный email"
+                        } })}
                     className={classes.field}
                     label="E-Mail"
                     fullWidth
@@ -86,7 +92,10 @@ const Registration:FC = () => {
                     error={Boolean(errors.password?.message)}
                     helperText={errors.password?.message}
                     type="password"
-                    {...register('password', { required: 'Укажите пароль' })}
+                    {...register('password', { required: 'Укажите пароль',minLength: {
+                        value: 5,
+                        message: "мнимум 5 символов"
+                    }, })}
                     className={classes.field}
                     label="Пароль"
                     fullWidth

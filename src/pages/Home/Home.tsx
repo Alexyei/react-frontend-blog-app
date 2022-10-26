@@ -1,4 +1,4 @@
-import React, {FC, useEffect} from 'react';
+import React, {FC, useEffect, useMemo, useState} from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
@@ -19,6 +19,26 @@ const Home:FC = () => {
     const {data} = useSelector((state:RootState)=>state.auth)
     const isPostsLoading = posts.status === "loading"
     const isTagsLoading = tags.status === "loading"
+    const [currentTab, setCurrentTab]= useState<"new"|"popular">("new")
+
+    const sortedPosts = useMemo(()=>{
+        // if (isPostsLoading) return [];
+        switch(currentTab){
+            case "new":
+                return [...posts.items].sort((a,b)=>{
+                    const firstValue = a.createdAt;
+                    const secondValue = b.createdAt;
+                    if (firstValue>secondValue) return -1;
+                    if (firstValue<secondValue) return  1;
+                    return 0;
+                })
+            case "popular":
+                return [...posts.items].sort((a,b)=>{
+                    return b.viewsCount - a.viewsCount;
+                })
+        }
+    },[currentTab,posts])
+
 
     function checkCanEditPost(post:IPost, userData:any){
         if (!userData) return false;
@@ -31,18 +51,23 @@ const Home:FC = () => {
         dispatch(fetchTags())
     },[])
 
+
+    const handleChangeTabs = (event: React.SyntheticEvent, newValue:"new"|"popular") => {
+        setCurrentTab(newValue);
+    };
+
   return (
     <>
-      <Tabs style={{ marginBottom: 15 }} value={0} aria-label="basic tabs example">
-        <Tab label="Новые" />
-        <Tab label="Популярные" />
+      <Tabs style={{ marginBottom: 15 }} onChange={handleChangeTabs} value={currentTab} aria-label="basic tabs example">
+        <Tab value={"new"}  label="Новые" />
+        <Tab value={"popular"} label="Популярные" />
       </Tabs>
-      <Grid container spacing={4}>
-        <Grid xs={8} item>
+      <Grid container spacing={4} >
+        <Grid xs={12} md={8} item>
             {
                 isPostsLoading ?
                     [...Array(5)].map((_,i)=><PostSkeleton key={i}/>):
-                    posts.items.map(p=>(
+                    sortedPosts.map(p=>(
                         <Post
                             {...p}
                             key={p.id}
@@ -53,7 +78,7 @@ const Home:FC = () => {
                     ))
             }
         </Grid>
-        <Grid xs={4} item>
+        <Grid xs={12} md={4} item>
           <TagsBlock items={tags.items} isLoading={isTagsLoading} />
           <CommentsBlock
             items={[

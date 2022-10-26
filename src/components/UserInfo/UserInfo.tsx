@@ -2,7 +2,8 @@ import React, {FC} from 'react';
 import classes from './UserInfo.module.scss';
 
 const UserInfo:FC<{avatarUrl?:string,login:string,additionalText:string}> = ({ avatarUrl, login, additionalText }) => {
-  return (
+
+    return (
     <div className={classes.root}>
       <img className={classes.avatar} src={avatarUrl || '/noavatar.png'} alt={login} />
       <div className={classes.userDetails}>

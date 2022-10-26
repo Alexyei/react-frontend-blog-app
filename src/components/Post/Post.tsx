@@ -12,6 +12,9 @@ import PostSkeleton  from './PostSkeleton';
 import {Link} from "react-router-dom";
 import {API_URL} from "../../api";
 import axios from "axios";
+import {useDispatch} from "react-redux";
+import {AppDispatch} from "../../store";
+import {fetchRemovePost} from "../../store/reducers/postReducer";
 
 export interface IUser{id:string,login:string,avatarUrl?:string}
 
@@ -48,10 +51,20 @@ const Post:FC<IPostProps> = ({
   //   return <PostSkeleton />;
   // }
 
-  const onClickRemove = () => {};
+  const dispatch= useDispatch<AppDispatch>()
+
+  const onClickRemove = () => {
+    const token = window.localStorage.getItem('token')
+    if (token)
+    if (window.confirm('Вы действительно хотите удалить статью?')) {
+
+      dispatch(fetchRemovePost({id, token}));
+    }
+  };
 
   //"https://source.unsplash.com/1600x900/?beach"
   imageUrl = imageUrl ? API_URL+imageUrl: imageUrl
+
 
   return (
     <div className={clsx(classes.root, { [classes.rootFull]: isFullPost })}>

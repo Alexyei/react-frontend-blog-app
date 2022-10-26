@@ -37,8 +37,8 @@ const Login:FC = () => {
     const onSubmit = async (values:IFieldLoginValues) => {
         const data = await dispatch(fetchAuth(values));
 
-        if (!data.payload) {
-            return alert('Не удалось авторизоваться!');
+        if (!data.payload || 'error' in data.payload) {
+            return alert((data.payload as any).error);
         }
 
         if ('token' in data.payload) {
@@ -62,7 +62,10 @@ const Login:FC = () => {
                     error={Boolean(errors.email?.message)}
                     helperText={errors.email?.message}
                     type="email"
-                    {...register('email', { required: 'Укажите почту' })}
+                    {...register('email', { required: 'Укажите почту',pattern: {
+                        value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                    ,message: "Некорректный email"
+                    } })}
                     fullWidth
                 />
                 <TextField
@@ -70,7 +73,10 @@ const Login:FC = () => {
                     label="Пароль"
                     error={Boolean(errors.password?.message)}
                     helperText={errors.password?.message}
-                    {...register('password', { required: 'Укажите пароль' })}
+                    {...register('password', { required: 'Укажите пароль',minLength: {
+                            value: 5,
+                            message: "мнимум 5 символов"
+                        }, })}
                     fullWidth
                 />
                 <Button disabled={!isValid} type="submit" size="large" variant="contained" fullWidth>

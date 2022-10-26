@@ -24,7 +24,7 @@ const Header:FC = () => {
       <Container maxWidth="lg">
         <div className={classes.inner}>
           <Link className={classes.logo} to="/">
-            <div>ARCHAKOV BLOG</div>
+            <div>REACT BLOG</div>
           </Link>
           <div className={classes.buttons}>
             {isAuth ? (
