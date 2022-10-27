@@ -20,7 +20,7 @@ const TagsBlock:FC<{isLoading:boolean,items:string[]}> = ({ items, isLoading = t
           <Link
               key={i}
             style={{ textDecoration: "none", color: "black" }}
-            to={`/tags/${name}`}
+            to={`/tag/${name}`}
           >
             <ListItem key={i} disablePadding>
               <ListItemButton>
