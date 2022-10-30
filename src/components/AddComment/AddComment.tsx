@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 
 import classes from "./AddComment.module.scss";
-
+import LoadingButton from '@mui/lab/LoadingButton';
 import TextField from "@mui/material/TextField";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
@@ -22,7 +22,7 @@ const AddComment:FC = () => {
             multiline
             fullWidth
           />
-          <Button variant="contained">Отправить</Button>
+          <LoadingButton loading={true} variant="contained">Отправить</LoadingButton>
         </div>
       </div>
     </>

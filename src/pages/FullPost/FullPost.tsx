@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import $api from "../../api";
 import PostSkeleton from "../../components/Post/PostSkeleton";
 import {IPost} from "../../store/reducers/postReducer";
+import CommentsSection from "../../components/CommentsSection/CommentsSection";
 
 
 
@@ -35,7 +36,7 @@ const FullPost:FC = () => {
       >
           <ReactMarkdown children={data.text} />
       </Post>}
-      <CommentsBlock
+      <CommentsSection
         items={[
           {
 
@@ -45,6 +46,43 @@ const FullPost:FC = () => {
               avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
             },
             text: "Это тестовый комментарий 555555",
+              replies: [
+                  {
+
+                      user: {
+                          id:"1",
+                          login: "Снова я",
+                          avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
+                      },
+                      text: "Это тестовый комментарий 555555",
+                      replies: [
+
+                      ]
+                  },
+                  {
+
+                      user: {
+                          id:"1",
+                          login: "Ещё раз",
+                          avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
+                      },
+                      text: "Это тестовый комментарий 555555",
+                      replies: [
+                          {
+
+                              user: {
+                                  id:"1",
+                                  login: "Третий левел",
+                                  avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
+                              },
+                              text: "Это тестовый комментарий 555555",
+                              replies: [
+
+                              ]
+                          },
+                      ]
+                  },
+              ]
           },
           {
             user: {
@@ -52,13 +90,14 @@ const FullPost:FC = () => {
               login: "Иван Иванов",
               // avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
             },
-            text: "When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
+            text: "333When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
+           replies: []
           },
         ]}
         isLoading={false}
       >
         <AddComment />
-      </CommentsBlock>
+      </CommentsSection>
     </>
   );
 };
