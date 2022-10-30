@@ -1,4 +1,4 @@
-import React, {FC} from "react";
+import React, {FC, useState} from "react";
 import {IUser} from "../Post/Post";
 import SideBlock from "../SideBlock/SideBlock";
 import List from "@mui/material/List";
@@ -11,9 +11,10 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import {Collapse, Link} from "@mui/material";
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
+import AddComment from "../AddComment/AddComment";
 
 type CommentData = {
-    user: IUser, text: string,
+    user: IUser, text: string, id:string
     replies: CommentData[]
 }
 
@@ -32,16 +33,26 @@ const CommentSkeleton:FC = ()=>{
     )
 }
 
-const Comment:FC<{commentData: CommentData, level: number}> = ({commentData,level})=>{
+const Comment:FC<{commentData: CommentData,onComment:(text:string,commentData?:CommentData)=>void,buttonsIsLoading:boolean,selectedCommentID:string, setSelectedCommentID:(id:string)=>void, level: number}> = ({commentData,level,selectedCommentID,setSelectedCommentID,buttonsIsLoading,onComment})=>{
     const [open, setOpen] = React.useState(true);
+    // const [addCommentFormOpen, setAddCommentFormOpen] = React.useState(false)
+
+    const handleOpenForm = () => {
+      // setAddCommentFormOpen(prev=>!prev)
+        setSelectedCommentID(selectedCommentID === commentData.id?'':commentData.id)
+    }
+
+    const handleComment= async (text:string)=>{
+        await onComment(text,commentData)
+    }
 
     const handleClick = () => {
-        setOpen(!open);
+        setOpen(prev=>!prev);
     };
 
     return (
         <>
-        <ListItemButton onClick={handleClick} sx={{pl: level ? 16+(16 * level)+'px' : '16px'}} alignItems="center">
+        <ListItemButton onClick={handleClick} sx={{pl:  16+(16 * level)+'px' }} alignItems="center">
             <ListItemAvatar>
             <Avatar alt={commentData.user.login} src={commentData?.user.avatarUrl || "/noavatar.png"}/>
             </ListItemAvatar>
@@ -54,13 +65,14 @@ const Comment:FC<{commentData: CommentData, level: number}> = ({commentData,leve
                 <ExpandMore sx={{fontSize: "2rem", color: "#b8b8b8"}}/>)}
 
         </ListItemButton>
-            <Link disabled={false} sx={{ pl: level ? 16 * level + 72+'px' : '72px',}} onClick={(e) => {console.info("I'm a button.");}} component="button" variant={"button"} underline="none">Ответить</Link>
+            <Link disabled={false} sx={{ pl:  16 * level + 72+'px'}} onClick={handleOpenForm} component="button" variant={"button"} underline="none">Ответить</Link>
 
-            <Divider sx={{ml: level ? 72+(16 * level)+'px' : '72px'}} variant="inset" component="li"/>
+            <Collapse in={selectedCommentID === commentData.id} timeout="auto" sx={{pl:  (16 * level)+'px'}}><AddComment handleOnSubmit={handleComment} buttonsIsLoading={buttonsIsLoading} /></Collapse>
+            <Divider sx={{ml: 72+(16 * level)+'px' }} variant="inset" component="li"/>
             <Collapse in={open} timeout="auto">
                 {
                     commentData?.replies.map((obj, index) => {
-                        return (<CommentElement key={index} commentData={obj} isLoading={false} level={level + 1}/>)
+                        return (<CommentElement onComment={onComment} buttonsIsLoading={buttonsIsLoading} key={index} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={obj} isLoading={false} level={level + 1}/>)
                     })
                 }
             </Collapse>
@@ -68,8 +80,12 @@ const Comment:FC<{commentData: CommentData, level: number}> = ({commentData,leve
     )
 }
 
-const CommentElement: FC<{ isLoading: boolean, commentData?: CommentData, level?: number }> = ({
+const CommentElement: FC<{ isLoading: boolean,buttonsIsLoading:boolean,onComment:(text:string,commentData?:CommentData)=>void, selectedCommentID:string, setSelectedCommentID:(id:string)=>void, commentData?: CommentData, level?: number }> = ({
                                                                                                    isLoading,
+    onComment,
+    buttonsIsLoading,
+    selectedCommentID,
+                                                                                                                                                                    setSelectedCommentID,
                                                                                                    commentData,
                                                                                                    level = 0
                                                                                                }) => {
@@ -79,7 +95,7 @@ const CommentElement: FC<{ isLoading: boolean, commentData?: CommentData, level?
 
     return (
         <React.Fragment>
-            {isLoading ? <CommentSkeleton/> : <Comment commentData={commentData!} level={level}/>}
+            {isLoading ? <CommentSkeleton/> : <Comment onComment={onComment} buttonsIsLoading={buttonsIsLoading} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={commentData!} level={level}/>}
             {/*<ListItemButton onClick={handleClick} sx={{pl: level ? 4 * level : 'auto'}} alignItems="center">*/}
             {/*    <ListItemAvatar>*/}
             {/*        {isLoading ? (*/}
@@ -131,13 +147,28 @@ const CommentsSection: FC<{ isLoading: boolean, items: CommentData[], children?:
                                                                                                            children,
                                                                                                            isLoading = true
                                                                                                        }) => {
+
+    const [selectedCommentID, setSelectedCommentID] = useState('');
+    const [buttonsIsLoading, setButtonsIsLoading] = useState(false)
+
+    const onOpenCommentForm = (id:string)=>{
+        setSelectedCommentID(id)
+    }
+
+
+    const onComment = async (text:string,comment?:CommentData)=>{
+        setButtonsIsLoading(true)
+        return new Promise<void>(resolve=>setTimeout(()=>{setButtonsIsLoading(false);resolve()},5000))
+    }
+
+
     return (
-        <SideBlock title="Комментарии">
-            <List>
+        <SideBlock title="Комментарии: 100" >
+            <AddComment handleOnSubmit={(text)=>onComment(text)} buttonsIsLoading={buttonsIsLoading} />
+            <List sx={{pb:"20px"}}>
                 {(isLoading ? [...Array(5)] : items).map((obj: typeof items[number] | undefined, index) => (
-                    <CommentElement key={index} commentData={obj} isLoading={isLoading}/>))}
+                    <CommentElement onComment={onComment} buttonsIsLoading={buttonsIsLoading} selectedCommentID={selectedCommentID} setSelectedCommentID={onOpenCommentForm} key={index} commentData={obj} isLoading={isLoading}/>))}
             </List>
-            {children}
         </SideBlock>
     );
 };
