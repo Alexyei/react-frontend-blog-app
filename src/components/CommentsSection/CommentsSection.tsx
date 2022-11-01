@@ -39,49 +39,8 @@ const CommentElement: FC<{ isLoading: boolean,buttonsIsLoading:boolean,onComment
 
     return (
         <React.Fragment>
-            {isLoading ? <CommentSkeleton/> : <Comment onComment={onComment} buttonsIsLoading={buttonsIsLoading} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={commentData!} level={level}/>}
-            {/*<ListItemButton onClick={handleClick} sx={{pl: level ? 4 * level : 'auto'}} alignItems="center">*/}
-            {/*    <ListItemAvatar>*/}
-            {/*        {isLoading ? (*/}
-            {/*            <Skeleton variant="circular" width={40} height={40}/>*/}
-            {/*        ) : (*/}
-            {/*            <Avatar alt={commentData?.user.login} src={commentData?.user.avatarUrl || "/noavatar.png"}/>*/}
-            {/*        )}*/}
-            {/*    </ListItemAvatar>*/}
-            {/*    {isLoading ? (*/}
-            {/*        <div style={{display: "flex", flexDirection: "column"}}>*/}
-            {/*            <Skeleton variant="text" height={25} width={120}/>*/}
-            {/*            <Skeleton variant="text" height={18} width={230}/>*/}
-            {/*        </div>*/}
-            {/*    ) : (*/}
-            {/*        <ListItemText*/}
-            {/*            primary={commentData?.user.login}*/}
-            {/*            secondary={commentData?.text}*/}
-            {/*        />*/}
-            {/*    )}*/}
-            {/*    {!isLoading && commentData?.replies && commentData?.replies.length > 0 && (open ?*/}
-            {/*        <ExpandLess onClick={handleClick} sx={{fontSize: "2rem", color: "#b8b8b8"}}/> :*/}
-            {/*        <ExpandMore sx={{fontSize: "2rem", color: "#b8b8b8"}} onClick={handleClick}/>)}*/}
+            {/*{isLoading ? <CommentSkeleton/> : <Comment onComment={onComment} buttonsIsLoading={buttonsIsLoading} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={commentData!} level={level}/>}*/}
 
-            {/*</ListItemButton>*/}
-            {/*{!isLoading &&*/}
-            {/*<>*/}
-            {/*    <Link disabled={false} sx={{ pl: level ? 4 * level + 72+'px' : '72px',}}*/}
-            {/*          onClick={(e) => {*/}
-
-            {/*              console.info("I'm a button.");*/}
-            {/*          }}*/}
-            {/*          component="button" variant={"button"} underline="none">Ответить</Link>*/}
-            {/*</>}*/}
-            {/*<Divider variant="inset" component="li"/>*/}
-
-            {/*<Collapse in={open} timeout="auto">*/}
-            {/*    {*/}
-            {/*        commentData?.replies.map((obj, index) => {*/}
-            {/*            return (<CommentElement key={index} commentData={obj} isLoading={isLoading} level={level + 1}/>)*/}
-            {/*        })*/}
-            {/*    }*/}
-            {/*</Collapse>*/}
         </React.Fragment>
     )
 }
@@ -101,18 +60,32 @@ const CommentSkeleton:FC = ()=>{
     ),[])
 }
 
-const Comment:FC<{commentData: CommentData,onComment:(text:string,commentData?:CommentData)=>void,buttonsIsLoading:boolean,selectedCommentID:string, setSelectedCommentID:(id:string)=>void, level: number}> = ({commentData,level,selectedCommentID,setSelectedCommentID,buttonsIsLoading,onComment})=>{
-    const [open, setOpen] = React.useState(false);
+const Comment:FC<{commentData: CommentData,onComment:(text:string,commentData?:CommentData)=>void,buttonsIsLoading:boolean,openGlobalForm:(id:string,onOpen:()=>void,onClose:()=>void)=>void, level: number}> = ({commentData,level,openGlobalForm,buttonsIsLoading,onComment})=>{
+    const [open, setOpen] = React.useState(true);
     // const [addCommentFormOpen, setAddCommentFormOpen] = React.useState(false)
 
-    const handleOpenForm = useCallback(() => {
-      // setAddCommentFormOpen(prev=>!prev)
-        setSelectedCommentID(selectedCommentID === commentData._id?'':commentData._id)
-    },[selectedCommentID])
+    const [commentFormIsOpen, setCommentFormIsOpen] = useState(false)
+
+    const handleOpenCommentForm = useCallback(()=>{
+        openGlobalForm(commentData._id,onOpenCommentForm,onCloseCommentForm)
+    },[])
+
+    const onOpenCommentForm = useCallback(()=>{
+        setCommentFormIsOpen(true)
+    },[])
+
+    const onCloseCommentForm = useCallback(()=>{
+        setCommentFormIsOpen(false)
+    },[])
+
+    // const handleOpenForm = useCallback(() => {
+    //   // setAddCommentFormOpen(prev=>!prev)
+    //     setSelectedCommentID(selectedCommentID === commentData._id?'':commentData._id)
+    // },[selectedCommentID])
 
     const handleComment= useCallback(async (text:string)=>{
         await onComment(text,commentData)
-    },[])
+    },[commentData])
 
     const handleClick = useCallback(() => {
         setOpen(prev=>!prev);
@@ -133,15 +106,15 @@ const Comment:FC<{commentData: CommentData,onComment:(text:string,commentData?:C
                 <ExpandMore sx={{fontSize: "2rem", color: "#b8b8b8"}}/>)}
 
         </ListItemButton>
-            <Link disabled={false} sx={{ pl:  16 * level + 72+'px'}} onClick={handleOpenForm} component="button" variant={"button"} underline="none">Ответить</Link>
+            <Link disabled={false} sx={{ pl:  16 * level + 72+'px'}} onClick={handleOpenCommentForm} component="button" variant={"button"} underline="none">Ответить</Link>
 
-            <Collapse in={selectedCommentID === commentData._id} timeout="auto" sx={{pl:  (16 * level)+'px'}}><AddComment handleOnSubmit={handleComment} buttonsIsLoading={buttonsIsLoading} /></Collapse>
+            <Collapse in={commentFormIsOpen} timeout="auto" sx={{pl:  (16 * level)+'px'}}><AddComment handleOnSubmit={handleComment} buttonsIsLoading={buttonsIsLoading} /></Collapse>
             <Divider sx={{ml: 72+(16 * level)+'px' }} variant="inset" component="li"/>
-            <Collapse in={open} timeout="auto" mountOnEnter unmountOnExit>
+            <Collapse in={open} timeout="auto">
                 {
                     commentData?.replies.map((obj, index) => {
                         // return (<CommentElement onComment={onComment} buttonsIsLoading={buttonsIsLoading} key={index} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={obj} isLoading={false} level={level + 1}/>)
-                        return (<Comment onComment={onComment} buttonsIsLoading={buttonsIsLoading} key={index} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={obj} level={level + 1}/>)
+                        return (<Comment onComment={onComment} buttonsIsLoading={buttonsIsLoading} key={index} openGlobalForm={openGlobalForm} commentData={obj} level={level + 1}/>)
                     })
                 }
             </Collapse>
@@ -178,12 +151,12 @@ function useGlobalForm(){
 const CommentsSection: FC<{ postID:string }>
     = ({postID}) => {
     const {data:authData} = useSelector((state:RootState)=>state.auth)
-    const [selectedCommentID, setSelectedCommentID] = useState('');
+    // const [selectedCommentID, setSelectedCommentID] = useState('');
     // const [buttonsIsLoading, setButtonsIsLoading] = useState(false)
 
-    const onOpenCommentForm = useCallback((id:string)=>{
-        setSelectedCommentID(id)
-    },[])
+    // const onOpenCommentForm = useCallback((id:string)=>{
+    //     setSelectedCommentID(id)
+    // },[])
 
     const {loading:isLoading,value:commentsData,error,execute}=useAsync(getPostComments)
     const {loading:buttonsIsLoading,value:newCommentData,error:newCommentError,execute:postComment}=useAsync(createComment,[],false)
@@ -196,7 +169,10 @@ const CommentsSection: FC<{ postID:string }>
 
 
     const onComment = useCallback(async (text:string,comment?:CommentData)=>{
-        if (!authData) return;
+
+        console.log(text)
+        console.log(comment)
+        if (authData == null) return;
         // setButtonsIsLoading(true)
         const newComment:ICommentResponse = {
             _id: "100",
@@ -212,12 +188,16 @@ const CommentsSection: FC<{ postID:string }>
 
 
         postComment(authData.token,text,postID,comment?._id).then(res=>{
-            comment ? comment.replies.unshift({...newComment,...res}) : commentsData?.comments.unshift({...newComment,...res})
+            comment ? comment.replies.unshift({...newComment,...res}) : commentsData?.comments.unshift({...newComment,...res});
+            commentsData!.comments = [...commentsData!.comments];
         }).catch(err=>alert(err));
 
 
+
+
+
         // return new Promise<void>(resolve=>setTimeout(()=>{setButtonsIsLoading(false);resolve()},5000))
-    },[])
+    },[authData,commentsData,postID])
 
 
     return (
@@ -225,7 +205,7 @@ const CommentsSection: FC<{ postID:string }>
             {!isLoading &&<AddComment handleOnSubmit={(text)=>onComment(text)} buttonsIsLoading={buttonsIsLoading} />}
             <List sx={{pb:"20px"}}>
                 {isLoading ? [...Array(5)].map((obj,index)=><CommentSkeleton key={index}/>)
-                :  commentsData?.comments.map((obj, index) => (<Comment key={index} onComment={onComment} buttonsIsLoading={buttonsIsLoading} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={obj!} level={0}/>
+                :  commentsData?.comments.map((obj, index) => (<Comment key={index} onComment={onComment} buttonsIsLoading={buttonsIsLoading} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>
                     ))
                 }
                 {/*{(isLoading ? [...Array(5)] : commentsData!.comments).map((obj: CommentData | undefined, index) => (*/}
