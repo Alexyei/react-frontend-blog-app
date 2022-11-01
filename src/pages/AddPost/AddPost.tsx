@@ -29,6 +29,7 @@ const AddPost: FC = () => {
         handleSubmit,
         setValue,
         getValues,
+        trigger,
         formState: { errors, isValid },
     } = useForm({
         defaultValues: {
@@ -106,12 +107,13 @@ const AddPost: FC = () => {
                 .then(({ data }) => {
                     // setTitle(data.title);
                     // setText(data.text);
-                    // setImageUrl(data.imageUrl);
+                    setImageUrl(data.imageUrl);
                     // setTags(data.tags.join(','));
                     setValue('title',data.title)
                     setValue('text',data.text)
                     // setValue('imageUrl',data.imageUrl)
                     setValue('tags',data.tags.join(','))
+                    return trigger()
                 })
                 .catch((err) => {
                     console.warn(err);
@@ -192,6 +194,7 @@ const AddPost: FC = () => {
                                message: "мнимум 5 символов"
                            },
                        }) }
+                value={getValues('text')}
                        onChange={(value)=>setValue('text',value,{shouldValidate:true,shouldDirty:true})}
                        options={options}/>
             {Boolean(errors.text?.message) && <span style={{color:"red"}}>{errors.text?.message}</span>}

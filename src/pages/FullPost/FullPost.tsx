@@ -36,72 +36,74 @@ const FullPost:FC = () => {
       >
           <ReactMarkdown children={data.text} />
       </Post>}
-      <CommentsSection
-        items={[
-          {
+      {/*<CommentsSection*/}
+      {/*  items={[*/}
+      {/*    {*/}
 
-            user: {
-                id:"1",
-              login: "Вася Пупкин",
-              avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-            },
-              id:"1",
-            text: "Это тестовый комментарий 555555",
-              replies: [
-                  {
+      {/*      user: {*/}
+      {/*          id:"1",*/}
+      {/*        login: "Вася Пупкин",*/}
+      {/*        avatarUrl: "https://mui.com/static/images/avatar/1.jpg",*/}
+      {/*      },*/}
+      {/*        id:"1",*/}
+      {/*      text: "Это тестовый комментарий 555555",*/}
+      {/*        replies: [*/}
+      {/*            {*/}
 
-                      user: {
-                          id:"1",
-                          login: "Снова я",
-                          avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-                      },
-                      id:"2",
-                      text: "Это тестовый комментарий 555555",
-                      replies: [
+      {/*                user: {*/}
+      {/*                    id:"1",*/}
+      {/*                    login: "Снова я",*/}
+      {/*                    avatarUrl: "https://mui.com/static/images/avatar/1.jpg",*/}
+      {/*                },*/}
+      {/*                id:"2",*/}
+      {/*                text: "Это тестовый комментарий 555555",*/}
+      {/*                replies: [*/}
 
-                      ]
-                  },
-                  {
+      {/*                ]*/}
+      {/*            },*/}
+      {/*            {*/}
 
-                      user: {
-                          id:"1",
-                          login: "Ещё раз",
-                          avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-                      },
-                      text: "Это тестовый комментарий 555555",
-                      id:"3",
-                      replies: [
-                          {
+      {/*                user: {*/}
+      {/*                    id:"1",*/}
+      {/*                    login: "Ещё раз",*/}
+      {/*                    avatarUrl: "https://mui.com/static/images/avatar/1.jpg",*/}
+      {/*                },*/}
+      {/*                text: "Это тестовый комментарий 555555",*/}
+      {/*                id:"3",*/}
+      {/*                replies: [*/}
+      {/*                    {*/}
 
-                              user: {
-                                  id:"1",
-                                  login: "Третий левел",
-                                  avatarUrl: "https://mui.com/static/images/avatar/1.jpg",
-                              },
-                              id:"4",
-                              text: "Это тестовый комментарий 555555",
-                              replies: [
+      {/*                        user: {*/}
+      {/*                            id:"1",*/}
+      {/*                            login: "Третий левел",*/}
+      {/*                            avatarUrl: "https://mui.com/static/images/avatar/1.jpg",*/}
+      {/*                        },*/}
+      {/*                        id:"4",*/}
+      {/*                        text: "Это тестовый комментарий 555555",*/}
+      {/*                        replies: [*/}
 
-                              ]
-                          },
-                      ]
-                  },
-              ]
-          },
-          {
-            user: {
-                id:"2",
-              login: "Иван Иванов",
-              // avatarUrl: "https://mui.com/static/images/avatar/2.jpg",
-            },
-              id:"5",
-            text: "333When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",
-           replies: []
-          },
-        ]}
-        isLoading={false}
-      >
-      </CommentsSection>
+      {/*                        ]*/}
+      {/*                    },*/}
+      {/*                ]*/}
+      {/*            },*/}
+      {/*        ]*/}
+      {/*    },*/}
+      {/*    {*/}
+      {/*      user: {*/}
+      {/*          id:"2",*/}
+      {/*        login: "Иван Иванов",*/}
+      {/*        // avatarUrl: "https://mui.com/static/images/avatar/2.jpg",*/}
+      {/*      },*/}
+      {/*        id:"5",*/}
+      {/*      text: "333When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top",*/}
+      {/*     replies: []*/}
+      {/*    },*/}
+      {/*  ]}*/}
+      {/*  isLoading={false}*/}
+      {/*>*/}
+      {/*</CommentsSection>*/}
+
+        <CommentsSection postID={id || ""}/>
     </>
   );
 };
