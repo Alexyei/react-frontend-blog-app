@@ -4,6 +4,7 @@ import Home from "../pages/Home/Home";
 import Registration from "../pages/Registration/Registration";
 import Login from "../pages/Login/Login";
 import TagPage from "../pages/Tag/Tag";
+import TestPage from "../pages/Test/TestPage";
 
 
 export const publicRoutes= [
@@ -14,6 +15,7 @@ export const publicRoutes= [
     {path: '/login',element:(<Login/>),linkName:'login'},
     {path: '/signup',element:(<Registration/>),linkName:'signup'},
     {path:'/tag/:name',element:(<TagPage/>),linkName: 'by-tag'},
+    {path:'/test',element:(<TestPage/>),linkName: 'test'},
 
 
 

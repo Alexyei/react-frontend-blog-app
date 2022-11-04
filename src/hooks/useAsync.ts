@@ -21,5 +21,5 @@ export function useAsync<ValueType, ErrorType>(callback:(...params:any[])=>Promi
     //     memorizedCallback()
     // },[memorizedCallback])
 
-    return {loading,error,value,execute:memorizedCallback};
+    return {loading,error,value,setValue,execute:memorizedCallback};
 }
