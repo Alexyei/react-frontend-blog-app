@@ -1,6 +1,4 @@
 import React, {FC, memo, useCallback, useEffect, useMemo, useRef, useState} from "react";
-import {IUser} from "../Post/Post";
-import SideBlock from "../SideBlock/SideBlock";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
@@ -11,12 +9,13 @@ import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import {Collapse, Link} from "@mui/material";
 import {ExpandLess, ExpandMore} from "@mui/icons-material";
-import AddComment from "../AddComment/AddComment";
 import {useAsync} from "../../hooks/useAsync";
 import {createComment, getPostComments, ICommentResponse} from "../../api/comments";
 import {useSelector} from "react-redux";
 import {RootState} from "../../store";
 import {current} from "@reduxjs/toolkit";
+import AddComment from "../../components/AddComment/AddComment";
+import SideBlock from "../../components/SideBlock/SideBlock";
 
 type CommentData = ICommentResponse;
 type IChain = {
@@ -39,7 +38,7 @@ const CommentSkeleton:FC = ()=>{
     ),[])
 }
 
-const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComment:(text:string,chain?:IChain)=>void,openGlobalForm:(id:string,onOpen:()=>void,onClose:()=>void,onStartComment:()=>void,onEndComment:()=>void)=>void, level: number,chain:IChain}>(({commentData,level,openGlobalForm,onComment,chain},ref)=>{
+const Comment:FC<{commentData: CommentData,onComment:(text:string,chain?:IChain)=>void,openGlobalForm:(id:string,onOpen:()=>void,onClose:()=>void,onStartComment:()=>void,onEndComment:()=>void)=>void, level: number,chain:IChain}> = ({commentData,level,openGlobalForm,onComment,chain})=>{
     const [open, setOpen] = React.useState(true);
 
     const [commentFormIsOpen, setCommentFormIsOpen] = useState(false)
@@ -77,11 +76,8 @@ const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComm
         setOpen(prev=>!prev);
     },[]);
 
-    // useEffect(()=>{
-    //     console.log("RENDERED "+commentData.text)
-    // },[])
- useEffect(()=>{
-        console.log(ref)
+    useEffect(()=>{
+        console.log("RENDERED "+commentData.text)
     },[])
 
 
@@ -103,7 +99,7 @@ const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComm
 
             <Collapse in={commentFormIsOpen} timeout="auto" sx={{pl:  (16 * level)+'px'}}><AddComment handleOnSubmit={handleComment} buttonsIsLoading={isFormButtonLoading} /></Collapse>
             <Divider sx={{ml: 72+(16 * level)+'px' }} variant="inset" component="li"/>
-            <Collapse  in={open} timeout="auto">
+            <Collapse in={open} timeout="auto">
                 {
                     commentData?.replies.map((obj) => {
                         // return (<CommentElement onComment={onComment} buttonsIsLoading={buttonsIsLoading} key={index} selectedCommentID={selectedCommentID} setSelectedCommentID={setSelectedCommentID} commentData={obj} isLoading={false} level={level + 1}/>)
@@ -111,11 +107,10 @@ const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComm
                     })
                 }
             </Collapse>
-                <div ref={ref}/>
         </>
     )
     // },[commentData,commentFormIsOpen,open,isFormButtonLoading,commentData.replies])
-})
+}
 
 const CommentMemo = memo(Comment,(prev,next)=>{
     console.log(prev.commentData.text+" || "+next.commentData.text)
@@ -154,30 +149,14 @@ function useGlobalForm(){
 
 
 
-const CommentsSection: FC<{ postID:string }> = ({postID}) => {
+const CommentsSection: FC<{ postID:string }>
+    = ({postID}) => {
     const {data:authData} = useSelector((state:RootState)=>state.auth)
 
     const {loading:isLoading,value:commentsData,setValue:setCommentsData,error,execute}=useAsync(getPostComments)
     const {loading:buttonsIsLoading,value:newCommentData,error:newCommentError,execute:postComment}=useAsync(createComment,[],false)
 
     const {openForm:openGlobalForm,currentForm} = useGlobalForm();
-    const [lastRootCommentIndex, setLastCommentIndex] = useState(10)
-
-
-    const observer = useRef<IntersectionObserver>()
-    const lastBookElementRef = useCallback((node:HTMLDivElement)=> {
-        if (isLoading) return
-        if (observer.current) observer.current.disconnect()
-        observer.current = new IntersectionObserver(entries => {
-            console.log("IN OBSERVER")
-            if (entries[0].isIntersecting && (commentsData && (lastRootCommentIndex+1<commentsData.count))) {
-                // setPageNumber(prevPageNumber => prevPageNumber + 1)
-                setLastCommentIndex(prev=>prev+10)
-            }
-        })
-        if (node) observer.current.observe(node)
-        console.log("START OBSERVER")
-    }, [isLoading,lastRootCommentIndex])
 
     useEffect(()=>{
         execute(postID).then(res=>console.log(res.count)).catch(err=>alert(err))
@@ -198,6 +177,45 @@ const CommentsSection: FC<{ postID:string }> = ({postID}) => {
         }
     }
 
+    // const onComment = useCallback(async (text:string,comment?:CommentData)=>{
+    //
+    //     console.log(text)
+    //     console.log(comment)
+    //     console.log(commentsData)
+    //     if (authData == null) return;
+    //     // setButtonsIsLoading(true)
+    //     const newComment:ICommentResponse = {
+    //         _id: "100",
+    //         author: {_id: authData.id, login: authData.login,avatarUrl: authData?.avatarUrl},
+    //         createdAt: new Date().toISOString(),
+    //         isDeleted: false,
+    //         level: comment?.level != undefined ? comment?.level + 1 : undefined,
+    //         parent: comment?._id,
+    //         replies: [],
+    //         text: text
+    //
+    //     }
+    //
+    //
+    //     postComment(authData.token,text,postID,comment?._id).then(res=>{
+    //         comment ?
+    //             // comment.replies = [{...newComment,...res}, ...comment.replies ]
+    //             comment.replies.unshift({...newComment,...res})
+    //             : commentsData?.comments.unshift({...newComment,...res});
+    //
+    //
+    //         setCommentsData(prev=>(prev?{...prev}:prev))
+    //         // commentsData!.comments = [...commentsData!.comments];
+    //     }).catch(err=>alert(err));
+    //
+    //
+    //
+    //
+    //
+    //
+    //
+    //     // return new Promise<void>(resolve=>setTimeout(()=>{setButtonsIsLoading(false);resolve()},5000))
+    // },[authData,commentsData,postID])
 
 
     const addCommentMemo = async (text:string,chain?:IChain)=>{
@@ -229,7 +247,6 @@ const CommentsSection: FC<{ postID:string }> = ({postID}) => {
             else{
                 console.log("NOT IN CHAIN")
                 setCommentsData(prev=>prev ? {comments:[{...newComment,...res},...prev.comments],count:prev.count+1}:null);
-                setLastCommentIndex(prev=>prev+1);
             }
         }).catch(err=>alert(err));
 
@@ -245,11 +262,8 @@ const CommentsSection: FC<{ postID:string }> = ({postID}) => {
             {!isLoading &&<AddComment handleOnSubmit={handleOnCommentMainForm} buttonsIsLoading={buttonsIsLoading} />}
             <List sx={{pb:"20px"}}>
                 {isLoading ? [...Array(5)].map((obj,index)=><CommentSkeleton key={index}/>)
-                :  commentsData?.comments.slice(0,lastRootCommentIndex+1).map((obj, index) =>
-                        index == lastRootCommentIndex ?
-                        (<CommentMemo ref={lastBookElementRef} key={obj._id} chain={{comment:obj,prev:null}} onComment={addCommentMemo} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>):
-                        (<CommentMemo key={obj._id} chain={{comment:obj,prev:null}} onComment={addCommentMemo} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>)
-                    )
+                :  commentsData?.comments.map((obj, index) => (<CommentMemo key={obj._id} chain={{comment:obj,prev:null}} onComment={addCommentMemo} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>
+                    ))
                 }
             </List>
         </SideBlock>
