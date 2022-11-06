@@ -77,12 +77,10 @@ const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComm
         setOpen(prev=>!prev);
     },[]);
 
-    // useEffect(()=>{
-    //     console.log("RENDERED "+commentData.text)
-    // },[])
- useEffect(()=>{
-        console.log(ref)
+    useEffect(()=>{
+        console.log("RENDERED "+commentData._id)
     },[])
+
 
 
         return (<>
@@ -118,12 +116,12 @@ const Comment = React.forwardRef<HTMLDivElement,{commentData: CommentData,onComm
 })
 
 const CommentMemo = memo(Comment,(prev,next)=>{
-    console.log(prev.commentData.text+" || "+next.commentData.text)
-    console.log((prev.commentData != next.commentData))
-    console.log((prev.commentData.replies != next.commentData.replies))
-    console.log((prev.commentData != next.commentData)
-        || (prev.commentData.replies != next.commentData.replies))
-    console.log("________________")
+    // console.log(prev.commentData.text+" || "+next.commentData.text)
+    // console.log((prev.commentData != next.commentData))
+    // console.log((prev.commentData.replies != next.commentData.replies))
+    // console.log((prev.commentData != next.commentData)
+    //     || (prev.commentData.replies != next.commentData.replies))
+    // console.log("________________")
     return (prev.commentData !== next.commentData)
         || (prev.commentData.replies !== next.commentData.replies);
 })
@@ -254,6 +252,21 @@ const CommentsSection: FC<{ postID:string }> = ({postID}) => {
             </List>
         </SideBlock>
     );
+
+    // return (
+    //     <SideBlock title={isLoading ? "Загрузка комментариев..." : `Комментарии: ${commentsData?.count}`} >
+    //         {!isLoading &&<AddComment handleOnSubmit={handleOnCommentMainForm} buttonsIsLoading={buttonsIsLoading} />}
+    //         <List sx={{pb:"20px"}}>
+    //             {isLoading ? [...Array(5)].map((obj,index)=><CommentSkeleton key={index}/>)
+    //                 :  commentsData?.comments.slice((lastRootCommentIndex+1 < 20)?0:(lastRootCommentIndex+1-20),lastRootCommentIndex+1).map((obj, index) =>
+    //                     index == (lastRootCommentIndex < 20 ? lastRootCommentIndex: 19 ) ?
+    //                         (<CommentMemo ref={lastBookElementRef} key={obj._id} chain={{comment:obj,prev:null}} onComment={addCommentMemo} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>):
+    //                         (<CommentMemo key={obj._id} chain={{comment:obj,prev:null}} onComment={addCommentMemo} openGlobalForm={openGlobalForm} commentData={obj!} level={0}/>)
+    //                 )
+    //             }
+    //         </List>
+    //     </SideBlock>
+    // );
 };
 
 export default CommentsSection;
